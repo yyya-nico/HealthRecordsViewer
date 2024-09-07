@@ -11,4 +11,5 @@
     <string name="no_records">No records</string>
     <string name="weights_num" translatable="false">kg</string>
     <string name="steps_num">steps</string>
+    <string name="datetime_pattern">LLL d h:mm a</string>
 </resources>

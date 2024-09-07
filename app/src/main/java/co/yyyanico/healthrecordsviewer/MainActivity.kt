@@ -308,7 +308,7 @@ class MainActivity : ComponentActivity() {
         val stepsStartDateTime = LocalDateTime.of(now.year, now.month, day, 0, 0)
         val stepsEndDateTime = LocalDateTime.of(now.year, now.month, day + 1, 0, 0)
 
-//        val formatter = DateTimeFormatter.ofPattern("d日 H:mm")
+//        val formatter = DateTimeFormatter.ofPattern(getString(R.string.datetime_pattern))
 //        val formattedStartDateTime = stepsStartDateTime.format(formatter)
 //        val formattedEndDateTime = stepsEndDateTime.format(formatter)
 //        Log.i(TAG, """
@@ -344,7 +344,7 @@ class MainActivity : ComponentActivity() {
             for (weightRecord in response.records) {
                 // Process each step record
                 val ldt = LocalDateTime.ofInstant(weightRecord.time, ZoneId.systemDefault())
-                val formatter = DateTimeFormatter.ofPattern("d日 H:mm")
+                val formatter = DateTimeFormatter.ofPattern(getString(R.string.datetime_pattern))
                 val formattedDateTime = ldt.format(formatter)
                 weights[formattedDateTime] = weightRecord.weight.inKilograms
             }
@@ -461,6 +461,8 @@ fun DescriptionItem(key: String, value: String) {
 @Preview(showBackground = true)
 @Composable
 fun HealthRecordsViewerPreview() {
+    val formatter = DateTimeFormatter.ofPattern("LLL d h:mm a")
+    val formattedDateTime = LocalDateTime.now().format(formatter)
     HealthRecordsViewerTheme {
         Scaffold(
             topBar = {
@@ -477,7 +479,7 @@ fun HealthRecordsViewerPreview() {
             },
             content = { innerPadding ->
                 HealthRecordsViewer(
-                    weights = mapOf("9:00" to 61.0, "23:00" to 60.0),
+                    weights = mapOf("9:00" to 61.0, formattedDateTime to 60.0),
                     steps = 8000L,
                     context = null,
                     modifier = Modifier.padding(innerPadding)

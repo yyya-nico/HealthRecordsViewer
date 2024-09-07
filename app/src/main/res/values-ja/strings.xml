@@ -11,4 +11,5 @@
     <string name="steps">歩数</string>
     <string name="no_records">(記録なし)</string>
     <string name="steps_num">歩</string>
+    <string name="datetime_pattern">d日 H:mm</string>
 </resources>
