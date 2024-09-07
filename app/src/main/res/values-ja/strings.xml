@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ヘルス記録ビューア</string>
+    <string name="short_app_name">ヘルス記録</string>
+    <string name="please_wait">お待ちください</string>
+    <string name="open_health_connect">ヘルスコネクトを開く</string>
+    <string name="no_permissions">ヘルスコネクトのパーミッションがありません</string>
+    <string name="cannot_get_info">情報が取得できませんでした。</string>
+    <string name="todays_records">本日の記録</string>
+    <string name="weights">体重</string>
+    <string name="steps">歩数</string>
+    <string name="no_records">(記録なし)</string>
+    <string name="steps_num">歩</string>
+</resources>
