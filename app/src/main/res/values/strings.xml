@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Health Records Viewer</string>
     <string name="short_app_name">Health Records</string>
-    <string name="please_wait">Please wait...</string>
+    <string name="please_wait">Please wait…</string>
     <string name="open_health_connect">Open Health Connect</string>
     <string name="no_permissions">You don\'t have Health Connect permissions.</string>
     <string name="cannot_get_info">Information could not be obtained.</string>
@@ -11,5 +11,5 @@
     <string name="no_records">No records</string>
     <string name="weights_num" translatable="false">kg</string>
     <string name="steps_num">steps</string>
-    <string name="datetime_pattern">LLL d h:mm a</string>
+    <string name="datetime_pattern">LLL d \'at\' h:mm a</string>
 </resources>

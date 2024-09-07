@@ -461,7 +461,7 @@ fun DescriptionItem(key: String, value: String) {
 @Preview(showBackground = true)
 @Composable
 fun HealthRecordsViewerPreview() {
-    val formatter = DateTimeFormatter.ofPattern("LLL d h:mm a")
+    val formatter = DateTimeFormatter.ofPattern("LLL d 'at' h:mm a")
     val formattedDateTime = LocalDateTime.now().format(formatter)
     HealthRecordsViewerTheme {
         Scaffold(
