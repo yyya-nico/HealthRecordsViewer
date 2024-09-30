@@ -295,18 +295,19 @@ class MainActivity : ComponentActivity() {
 //        val deletionChanges = changes.filterIsInstance<DeletionChange>()
 
         val now = LocalDateTime.now()
-        val day = if (now.hour in 0..<4) {
-            now.dayOfMonth - 1
+        val adjustedDate = if (now.hour in 0..<4) {
+            now.minusDays(1)
         } else {
-            now.dayOfMonth
+            now
         }
-        val weightsStartDateTime = LocalDateTime.of(now.year, now.month, day, 4, 0)
-        val weightsEndDateTime = LocalDateTime.of(now.year, now.month, day + 1, 4, 0)
+        val nextDayDate = adjustedDate.plusDays(1)
+        val weightsStartDateTime = LocalDateTime.of(adjustedDate.year, adjustedDate.month, adjustedDate.dayOfMonth, 4, 0)
+        val weightsEndDateTime = LocalDateTime.of(nextDayDate.year, nextDayDate.month, nextDayDate.dayOfMonth, 4, 0)
 
         readWeightsByTimeRange(healthConnectClient, weightsStartDateTime, weightsEndDateTime/*, upsertionChanges, deletionChanges*/)
 
-        val stepsStartDateTime = LocalDateTime.of(now.year, now.month, day, 0, 0)
-        val stepsEndDateTime = LocalDateTime.of(now.year, now.month, day + 1, 0, 0)
+        val stepsStartDateTime = LocalDateTime.of(adjustedDate.year, adjustedDate.month, adjustedDate.dayOfMonth, 0, 0)
+        val stepsEndDateTime = LocalDateTime.of(nextDayDate.year, nextDayDate.month, nextDayDate.dayOfMonth, 0, 0)
 
 //        val formatter = DateTimeFormatter.ofPattern(getString(R.string.datetime_pattern))
 //        val formattedStartDateTime = stepsStartDateTime.format(formatter)
