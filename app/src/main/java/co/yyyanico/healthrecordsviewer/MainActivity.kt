@@ -400,7 +400,7 @@ fun HealthRecordsViewer(weights: Map<String, Number>, steps: Long, context: Cont
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = context?.getString(R.string.weights) ?: "weigths",
+                    text = context?.getString(R.string.weights) ?: "weights",
                     style = MaterialTheme.typography.headlineLarge
                 )
                 if (weights.isEmpty()) {
@@ -446,12 +446,12 @@ fun DescriptionItem(key: String, value: String) {
             .fillMaxWidth()
     ) {
         Text(
-            text = key,
+            text = value,
             style = MaterialTheme.typography.titleLarge,
             textAlign = TextAlign.Center
         )
         Text(
-            text = value,
+            text = key,
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center
         )
