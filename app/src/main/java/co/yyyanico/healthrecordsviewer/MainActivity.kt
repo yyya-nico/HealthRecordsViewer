@@ -3,7 +3,6 @@ package co.yyyanico.healthrecordsviewer
 //import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 //import android.util.Log
 import android.widget.Toast
@@ -11,6 +10,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
+import androidx.core.net.toUri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -174,7 +174,7 @@ class MainActivity : ComponentActivity() {
             context.startActivity(
                 Intent(Intent.ACTION_VIEW).apply {
                     setPackage("com.android.vending")
-                    data = Uri.parse(uriString)
+                    data = uriString.toUri()
                     putExtra("overlay", true)
                     putExtra("callerId", context.packageName)
                 }

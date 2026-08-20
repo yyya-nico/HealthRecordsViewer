@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "co.yyyanico.healthrecordsviewer"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "co.yyyanico.healthrecordsviewer"
         minSdk = 28
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 4
         versionName = "1.3"
 
