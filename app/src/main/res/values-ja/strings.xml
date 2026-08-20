@@ -17,4 +17,14 @@
     <string name="no_records">(記録なし)</string>
     <string name="steps_num">歩</string>
     <string name="datetime_pattern">d日 H:mm</string>
+    <string name="privacy_policy_title">プライバシーポリシー</string>
+    <string name="close">閉じる</string>
+    <string name="privacy_policy_data_title">取得する健康データ</string>
+    <string name="privacy_policy_data_body">本アプリは、利用者がヘルスコネクトで許可した歩数と体重のデータを読み取ります。</string>
+    <string name="privacy_policy_purpose_title">利用目的</string>
+    <string name="privacy_policy_purpose_body">取得したデータは、選択した日付の記録を本アプリ内に表示する目的にのみ使用します。</string>
+    <string name="privacy_policy_handling_title">保存・送信・第三者提供</string>
+    <string name="privacy_policy_handling_body">健康データは端末内でのみ処理します。外部サーバーへの送信、第三者への提供、広告またはアクセス解析への利用は行いません。ヘルスコネクトから読み取ったデータはアプリの実行中のみ保持し、本アプリ独自には保存しません。</string>
+    <string name="privacy_policy_permissions_title">利用者による管理</string>
+    <string name="privacy_policy_permissions_body">ヘルスコネクトの設定から、いつでも本アプリの権限を確認または取り消せます。権限を取り消すと、該当する健康データを本アプリが読み取ることはできなくなります。</string>
 </resources>

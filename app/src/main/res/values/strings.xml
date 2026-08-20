@@ -17,4 +17,14 @@
     <string name="weights_num" translatable="false">kg</string>
     <string name="steps_num">steps</string>
     <string name="datetime_pattern">LLL d \'at\' h:mm a</string>
+    <string name="privacy_policy_title">Privacy Policy</string>
+    <string name="close">Close</string>
+    <string name="privacy_policy_data_title">Health data accessed</string>
+    <string name="privacy_policy_data_body">This app reads step count and weight data that you permit through Health Connect.</string>
+    <string name="privacy_policy_purpose_title">Purpose of use</string>
+    <string name="privacy_policy_purpose_body">The data is used only to display your records for the selected date within this app.</string>
+    <string name="privacy_policy_handling_title">Storage and sharing</string>
+    <string name="privacy_policy_handling_body">Health data is processed only on your device. This app does not send it to external servers, share it with third parties, or use it for advertising or analytics. Data read from Health Connect is held only while the app is running and is not saved by this app.</string>
+    <string name="privacy_policy_permissions_title">Your control</string>
+    <string name="privacy_policy_permissions_body">You can review or revoke this app’s permissions at any time in Health Connect settings. Revoking permission stops this app from reading the corresponding health data.</string>
 </resources>
