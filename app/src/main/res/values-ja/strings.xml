@@ -4,7 +4,9 @@
     <string name="short_app_name">ヘルス記録</string>
     <string name="please_wait">お待ちください</string>
     <string name="open_health_connect">ヘルスコネクトを開く</string>
-    <string name="no_permissions">ヘルスコネクトのパーミッションがありません</string>
+    <string name="permission_required_title">ヘルスコネクトの権限が必要です</string>
+    <string name="permission_required_message">記録を表示するには、歩数と体重の読み取り権限が必要です。ヘルスコネクトの設定で本アプリのアクセス権限を確認してから、この画面に戻ってください。</string>
+    <string name="check_health_connect_settings">ヘルスコネクトの設定を確認</string>
     <string name="cannot_get_info">情報が取得できませんでした。</string>
     <string name="todays_records">本日の記録</string>
     <string name="records_for_date">%1$sの記録</string>

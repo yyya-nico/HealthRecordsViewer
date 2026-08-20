@@ -78,9 +78,11 @@ class MainActivity : ComponentActivity() {
     private val weights = mutableMapOf<String, Double>()
     private var steps = -1L
     private var selectedDate = currentRecordDate()
+    private var permissionRequestAttempted = false
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        permissionRequestAttempted = savedInstanceState?.getBoolean(PERMISSION_REQUEST_ATTEMPTED) ?: false
         enableEdgeToEdge()
         setContent {
             HealthRecordsViewerTheme {
@@ -110,13 +112,14 @@ class MainActivity : ComponentActivity() {
         val requestPermissionActivityContract = PermissionController.createRequestPermissionResultContract()
 
         requestPermissions = registerForActivityResult(requestPermissionActivityContract) { granted ->
+            permissionRequestAttempted = true
             if (granted.containsAll(permissions)) {
                 // Permissions successfully granted
                 CoroutineScope(Dispatchers.Main).launch {
                     healthConnectClient?.let { loadDate(it, selectedDate) }
                 }
             } else {
-                Toast.makeText(applicationContext, getString(R.string.no_permissions), Toast.LENGTH_SHORT).show()
+                showPermissionRequired()
             }
         }
 
@@ -129,6 +132,11 @@ class MainActivity : ComponentActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             healthConnectClient?.let { checkPermissionsAndRun(it) }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(PERMISSION_REQUEST_ATTEMPTED, permissionRequestAttempted)
+        super.onSaveInstanceState(outState)
     }
 
     private fun healthConnectWrapper() {
@@ -163,6 +171,42 @@ class MainActivity : ComponentActivity() {
             action = "androidx.health.ACTION_HEALTH_CONNECT_SETTINGS"
         }
         startActivity(intent)
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    private fun showPermissionRequired() {
+        setContent {
+            HealthRecordsViewerTheme {
+                Scaffold(
+                    topBar = {
+                        TopAppBar(title = { Text(getString(R.string.app_name)) })
+                    }
+                ) { innerPadding ->
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize()
+                            .padding(horizontal = 32.dp, vertical = 64.dp)
+                    ) {
+                        Text(
+                            text = getString(R.string.permission_required_title),
+                            style = MaterialTheme.typography.headlineSmall,
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            text = getString(R.string.permission_required_message),
+                            style = MaterialTheme.typography.bodyLarge,
+                            textAlign = TextAlign.Center
+                        )
+                        Button(onClick = ::startHealthConnectApp) {
+                            Text(getString(R.string.check_health_connect_settings))
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private suspend fun loadDate(healthConnectClient: HealthConnectClient, date: LocalDate) {
@@ -229,7 +273,12 @@ class MainActivity : ComponentActivity() {
             // Permissions already granted; proceed with inserting or reading data
             loadDate(healthConnectClient, selectedDate)
         } else {
-            requestPermissions.launch(permissions)
+            if (permissionRequestAttempted) {
+                showPermissionRequired()
+            } else {
+                permissionRequestAttempted = true
+                requestPermissions.launch(permissions)
+            }
         }
     }
 
@@ -532,3 +581,5 @@ fun HealthRecordsViewerPreview() {
 
 private fun currentRecordDate(now: LocalDateTime = LocalDateTime.now()): LocalDate =
     if (now.hour < 4) now.toLocalDate().minusDays(1) else now.toLocalDate()
+
+private const val PERMISSION_REQUEST_ATTEMPTED = "permission_request_attempted"
