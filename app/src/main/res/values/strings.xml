@@ -6,6 +6,11 @@
     <string name="no_permissions">You don\'t have Health Connect permissions.</string>
     <string name="cannot_get_info">Information could not be obtained.</string>
     <string name="todays_records">Today\'s Records</string>
+    <string name="records_for_date">Records for %1$s</string>
+    <string name="previous_day">Previous</string>
+    <string name="today">Today</string>
+    <string name="next_day">Next</string>
+    <string name="date_pattern">MMM d, yyyy</string>
     <string name="weights">Weights</string>
     <string name="steps">Steps</string>
     <string name="no_records">No records</string>

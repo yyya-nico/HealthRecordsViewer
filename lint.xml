@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <lint>
-    <!-- Version upgrades are handled deliberately because the newest releases
-         currently require API 37 and AGP 9, which this project does not use. -->
+    <!-- Preview SDK and dependency upgrades are handled deliberately. -->
     <issue id="AndroidGradlePluginVersion" severity="ignore" />
     <issue id="GradleDependency" severity="ignore" />
     <issue id="NewerVersionAvailable" severity="ignore" />
+    <issue id="OldTargetApi" severity="ignore" />
 
-    <!-- Compose 1.7's detector cannot read metadata when run by lint 8.13. -->
+    <!-- Kept disabled for compatibility with the project's Compose libraries. -->
     <issue id="CoroutineCreationDuringComposition" severity="ignore" />
 </lint>

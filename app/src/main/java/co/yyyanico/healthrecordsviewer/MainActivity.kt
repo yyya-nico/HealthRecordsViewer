@@ -14,6 +14,8 @@ import androidx.core.net.toUri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 //import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +26,7 @@ import androidx.compose.material.icons.Icons
 //import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Button
 //import androidx.compose.material3.ExtendedFloatingActionButton
 //import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -35,6 +38,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -58,6 +62,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 //import java.io.IOException
 import java.time.LocalDateTime
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -72,6 +77,7 @@ class MainActivity : ComponentActivity() {
 //    private var changesToken: String? = null
     private val weights = mutableMapOf<String, Double>()
     private var steps = -1L
+    private var selectedDate = currentRecordDate()
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,43 +113,7 @@ class MainActivity : ComponentActivity() {
             if (granted.containsAll(permissions)) {
                 // Permissions successfully granted
                 CoroutineScope(Dispatchers.Main).launch {
-                    healthConnectClient?.let { getData(it) }
-                    setContent {
-                        HealthRecordsViewerTheme {
-                            Scaffold(
-                                topBar = {
-                                    TopAppBar(
-                                        title = {
-                                            Text(getString(R.string.app_name))
-                                        },
-                                        actions = {
-                                            IconButton(onClick = ::startHealthConnectApp) {
-                                                Icon(Icons.Outlined.Settings, getString(R.string.open_health_connect))
-                                            }
-                                        }
-                                    )
-                                },
-                                content = { innerPadding ->
-                                    HealthRecordsViewer(
-                                        weights,
-                                        steps,
-                                        context = applicationContext,
-                                        modifier = Modifier.padding(innerPadding)
-                                    )
-                                },
-//                                floatingActionButton = {
-//                                    ExtendedFloatingActionButton(
-//                                        onClick = ::startHealthConnectApp
-//                                    ) {
-//                                        Icon(Icons.Filled.Settings, getString(R.string.open_health_connect))
-//                                        Spacer(modifier = Modifier.width(8.dp))
-//                                        Text(getString(R.string.open_health_connect))
-//                                    }
-//                                },
-//                                floatingActionButtonPosition = FabPosition.Center
-                            )
-                        }
-                    }
+                    healthConnectClient?.let { loadDate(it, selectedDate) }
                 }
             } else {
                 Toast.makeText(applicationContext, getString(R.string.no_permissions), Toast.LENGTH_SHORT).show()
@@ -195,48 +165,69 @@ class MainActivity : ComponentActivity() {
         startActivity(intent)
     }
 
+    private suspend fun loadDate(healthConnectClient: HealthConnectClient, date: LocalDate) {
+        selectedDate = date
+        weights.clear()
+        steps = -1L
+        getData(healthConnectClient, date)
+        showRecords()
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    private fun showRecords() {
+        setContent {
+            HealthRecordsViewerTheme {
+                Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            title = { Text(getString(R.string.app_name)) },
+                            actions = {
+                                IconButton(
+                                    onClick = { changeDate(currentRecordDate()) },
+                                    enabled = selectedDate != currentRecordDate()
+                                ) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.outline_today_24),
+                                        contentDescription = getString(R.string.today)
+                                    )
+                                }
+                                IconButton(onClick = ::startHealthConnectApp) {
+                                    Icon(Icons.Outlined.Settings, getString(R.string.open_health_connect))
+                                }
+                            }
+                        )
+                    },
+                    content = { innerPadding ->
+                        HealthRecordsViewer(
+                            weights = weights,
+                            steps = steps,
+                            selectedDate = selectedDate,
+                            context = applicationContext,
+                            onPreviousDay = { changeDateBy(-1) },
+                            onNextDay = { changeDateBy(1) },
+                            modifier = Modifier.padding(innerPadding)
+                        )
+                    }
+                )
+            }
+        }
+    }
+
+    private fun changeDateBy(days: Long) = changeDate(selectedDate.plusDays(days))
+
+    private fun changeDate(date: LocalDate) {
+        if (date.isAfter(currentRecordDate())) return
+        CoroutineScope(Dispatchers.Main).launch {
+            healthConnectClient?.let { loadDate(it, date) }
+        }
+    }
+
     @OptIn(ExperimentalMaterial3Api::class)
     private suspend fun checkPermissionsAndRun(healthConnectClient: HealthConnectClient) {
         val granted = healthConnectClient.permissionController.getGrantedPermissions()
         if (granted.containsAll(permissions)) {
             // Permissions already granted; proceed with inserting or reading data
-            getData(healthConnectClient)
-            setContent {
-                HealthRecordsViewerTheme {
-                    Scaffold(
-                        topBar = {
-                            TopAppBar(
-                                title = {
-                                    Text(getString(R.string.app_name))
-                                },
-                                actions = {
-                                    IconButton(onClick = ::startHealthConnectApp) {
-                                        Icon(Icons.Outlined.Settings, getString(R.string.open_health_connect))
-                                    }
-                                }
-                            )
-                        },
-                        content = { innerPadding ->
-                            HealthRecordsViewer(
-                                weights,
-                                steps,
-                                context = applicationContext,
-                                modifier = Modifier.padding(innerPadding)
-                            )
-                        },
-//                        floatingActionButton = {
-//                            ExtendedFloatingActionButton(
-//                                onClick = ::startHealthConnectApp
-//                            ) {
-//                                Icon(Icons.Filled.Settings, getString(R.string.open_health_connect))
-//                                Spacer(modifier = Modifier.width(8.dp))
-//                                Text(getString(R.string.open_health_connect))
-//                            }
-//                        },
-//                        floatingActionButtonPosition = FabPosition.Center
-                    )
-                }
-            }
+            loadDate(healthConnectClient, selectedDate)
         } else {
             requestPermissions.launch(permissions)
         }
@@ -273,7 +264,7 @@ class MainActivity : ComponentActivity() {
 
 //    private var isFirst = true
 //    private val changes = mutableListOf<Change>()
-    private suspend fun getData(healthConnectClient: HealthConnectClient) {
+    private suspend fun getData(healthConnectClient: HealthConnectClient, date: LocalDate) {
 //        if (!isFirst) {
 //            changesToken?.let { token ->
 //                getChanges(token).collect { message ->
@@ -294,19 +285,13 @@ class MainActivity : ComponentActivity() {
 //        val upsertionChanges = changes.filterIsInstance<UpsertionChange>()
 //        val deletionChanges = changes.filterIsInstance<DeletionChange>()
 
-        val now = LocalDateTime.now()
-        val adjustedDate = if (now.hour in 0..<4) {
-            now.minusDays(1)
-        } else {
-            now
-        }
-        val nextDayDate = adjustedDate.plusDays(1)
-        val weightsStartDateTime = LocalDateTime.of(adjustedDate.year, adjustedDate.month, adjustedDate.dayOfMonth, 4, 0)
+        val nextDayDate = date.plusDays(1)
+        val weightsStartDateTime = LocalDateTime.of(date.year, date.month, date.dayOfMonth, 4, 0)
         val weightsEndDateTime = LocalDateTime.of(nextDayDate.year, nextDayDate.month, nextDayDate.dayOfMonth, 4, 0)
 
         readWeightsByTimeRange(healthConnectClient, weightsStartDateTime, weightsEndDateTime/*, upsertionChanges, deletionChanges*/)
 
-        val stepsStartDateTime = LocalDateTime.of(adjustedDate.year, adjustedDate.month, adjustedDate.dayOfMonth, 0, 0)
+        val stepsStartDateTime = LocalDateTime.of(date.year, date.month, date.dayOfMonth, 0, 0)
         val stepsEndDateTime = LocalDateTime.of(nextDayDate.year, nextDayDate.month, nextDayDate.dayOfMonth, 0, 0)
 
 //        val formatter = DateTimeFormatter.ofPattern(getString(R.string.datetime_pattern))
@@ -384,21 +369,63 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun HealthRecordsViewer(weights: Map<String, Number>, steps: Long, context: Context?, modifier: Modifier) {
+fun HealthRecordsViewer(
+    weights: Map<String, Number>,
+    steps: Long,
+    selectedDate: LocalDate,
+    context: Context?,
+    onPreviousDay: () -> Unit,
+    onNextDay: () -> Unit,
+    modifier: Modifier
+) {
+    val isToday = selectedDate == currentRecordDate()
+    val datePattern = context?.getString(R.string.date_pattern) ?: "MMM d, yyyy"
+    val formattedDate = selectedDate.format(DateTimeFormatter.ofPattern(datePattern))
+
     LazyColumn(
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 72.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 32.dp),
         modifier = modifier
     ) {
         item {
             Text(
-                text = context?.getString(R.string.todays_records) ?: "todays records",
-                style = MaterialTheme.typography.displayLarge
+                text = if (isToday) {
+                    context?.getString(R.string.todays_records) ?: "Today's records"
+                } else {
+                    context?.getString(R.string.records_for_date, formattedDate) ?: formattedDate
+                },
+                style = MaterialTheme.typography.displaySmall
             )
+            Text(
+                text = formattedDate,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 24.dp)
+            ) {
+                Button(
+                    onClick = onPreviousDay,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(context?.getString(R.string.previous_day) ?: "Previous")
+                }
+                Button(
+                    onClick = onNextDay,
+                    enabled = !isToday,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(context?.getString(R.string.next_day) ?: "Next")
+                }
+            }
             Column(
                 modifier = Modifier
-                    .padding(start = 20.dp, top = 48.dp, end = 20.dp)
+                    .padding(start = 20.dp, top = 40.dp, end = 20.dp)
                     .fillMaxWidth()
-            ) {
+            )
+            {
                 Text(
                     text = context?.getString(R.string.weights) ?: "weights",
                     style = MaterialTheme.typography.headlineLarge
@@ -482,7 +509,10 @@ fun HealthRecordsViewerPreview() {
                 HealthRecordsViewer(
                     weights = mapOf("9:00" to 61.0, formattedDateTime to 60.0),
                     steps = 8000L,
+                    selectedDate = currentRecordDate().minusDays(1),
                     context = null,
+                    onPreviousDay = {},
+                    onNextDay = {},
                     modifier = Modifier.padding(innerPadding)
                 )
             },
@@ -499,3 +529,6 @@ fun HealthRecordsViewerPreview() {
         )
     }
 }
+
+private fun currentRecordDate(now: LocalDateTime = LocalDateTime.now()): LocalDate =
+    if (now.hour < 4) now.toLocalDate().minusDays(1) else now.toLocalDate()
